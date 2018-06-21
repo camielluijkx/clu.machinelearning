@@ -25,7 +25,7 @@ namespace clu.machinelearning.irisclassification
         /// </summary>
         private const string TestDataFileLocation = @"IrisClassification/Data/iris-data_test.csv";
 
-        private IEnumerable<IrisFlowerDataModel> getIrisFlowerDataFromCsv(string dataFileLocation)
+        private List<IrisFlowerDataModel> getIrisFlowerDataFromCsv(string dataFileLocation)
         {
             return File.ReadAllLines(TestDataFileLocation)
                 .Skip(1)
@@ -37,71 +37,80 @@ namespace clu.machinelearning.irisclassification
                     PetalLength = float.Parse(x[2]),
                     PetalWidth = float.Parse(x[3]),
                     Label = x[4]
-                });
+                })
+                .ToList();
         }
 
         /// <summary>
         /// Returns iris flower data from test file.
         /// </summary>
         /// <returns>Iris flower data from test file.</returns>
-        public IEnumerable<IrisFlowerDataModel> GetIrisFlowerTestData()
+        public List<IrisFlowerDataModel> IrisFlowerTestData
         {
-            return getIrisFlowerDataFromCsv(TestDataFileLocation);
+            get
+            {
+                return getIrisFlowerDataFromCsv(TestDataFileLocation);
+            }
         }
 
         /// <summary>
         /// Returns iris flower data from training file.
         /// </summary>
-        /// <returns>Iris flower data from training file.</returns>
-        public IEnumerable<IrisFlowerDataModel> GetIrisFlowerTrainingData()
+        public List<IrisFlowerDataModel> GetIrisFlowerTrainingData
         {
-            return getIrisFlowerDataFromCsv(TrainingDataFileLocation);
+            get
+            {
+                return getIrisFlowerDataFromCsv(TrainingDataFileLocation);
+            }
         }
 
         /// <summary>
-        /// Builds machine learning pipeline and trains model.
+        /// Builds pipeline and trains prediction model for iris flower classification.
         /// </summary>
-        /// <returns>Trained machine learning model.</returns>
+        /// <returns>Trained prediction model for iris flower classification.</returns>
         public PredictionModel<IrisFlowerDataModel, IrisFlowerPredictionModel> BuildAndTrain()
         {
             var pipeline = new LearningPipeline
             {
-                // 1) Create a pipeline and load data
+                // 1) Load data
+                // Create a pipeline and load training data.
                 new TextLoader(TrainingDataFileLocation).CreateFrom<IrisFlowerDataModel>(useHeader: true, separator: ','),
 
                 // 2) Transform data
-                // Assign numeric values to text in "Label" column, because only numbers can be processed during model training
+                // Assign numeric values to text in "Label" column, because only numbers can be processed during model training.
                 new Dictionarizer("Label"),
 
-                // Puts all features into a vector
+                // Puts all features into a vector.
                 new ColumnConcatenator("Features", "SepalLength", "SepalWidth", "PetalLength", "PetalWidth"),
 
                 // 3) Add learner
-                // Add a learning algorithm to the pipeline. 
-                // This is a classification scenario (What type of iris is this?)
+                // Add a learning algorithm to the pipeline for classification. 
                 new StochasticDualCoordinateAscentClassifier(),
 
-                // Convert the Label back into original text(after converting to number in step 2)
+                // Convert text in "Label" column back into value of step 2.
                 new PredictedLabelColumnOriginalValueConverter() { PredictedLabelColumn = "PredictedLabel" }
             };
 
-            // 4) Train your model based on the data set
-            var model = pipeline.Train<IrisFlowerDataModel, IrisFlowerPredictionModel>();
+            // 4) Train your model based on the data set.
+            var trainingModel = pipeline.Train<IrisFlowerDataModel, IrisFlowerPredictionModel>();
 
-            return model;
+            return trainingModel;
         }
 
         /// <summary>
-        /// 
+        /// Evaluates trained prediction model for iris flower classification.
         /// </summary>
-        /// <param name="model"></param>
-        /// <returns>Returns accuracy of iris flower prediction model.</returns>
-        public double Evaluate(PredictionModel<IrisFlowerDataModel, IrisFlowerPredictionModel> model)
+        /// <param name="trainingModel">Trained prediction model for iris flower classification.</param>
+        /// <returns>Accuracy of trained prediction model for iris flower classification.</returns>
+        public double Evaluate(PredictionModel<IrisFlowerDataModel, IrisFlowerPredictionModel> trainingModel)
         {
+            // 1) Load data
             var testData = new TextLoader(TestDataFileLocation).CreateFrom<IrisFlowerDataModel>(useHeader: true, separator: ',');
-            var metrics = new ClassificationEvaluator().Evaluate(model, testData);
 
-            return metrics.AccuracyMacro;
+            // 2) Evaluate model
+            var classificationMetrics = new ClassificationEvaluator().Evaluate(trainingModel, testData);
+
+            return classificationMetrics.AccuracyMacro;
         }
     }
 }

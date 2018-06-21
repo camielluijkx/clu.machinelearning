@@ -1,11 +1,26 @@
-﻿using System;
+﻿using Microsoft.ML;
+
+using System;
+using System.Linq;
 
 namespace clu.machinelearning.irisclassification
 {
+    /// <summary>
+    /// Class to run iris flower prediction models. 
+    /// </summary>
     public class IrisFlowerModelRunner
     {
         private static readonly Lazy<IrisFlowerModelRunner> instance =
             new Lazy<IrisFlowerModelRunner>(() => new IrisFlowerModelRunner());
+
+        private void runPrediction(PredictionModel<IrisFlowerDataModel, IrisFlowerPredictionModel> predictionModel, IrisFlowerDataModel testData)
+        {
+            var prediction = predictionModel.Predict(testData);
+
+            Console.WriteLine($"Predicted type: {prediction.PredictedLabels}");
+            Console.WriteLine($"Actual type:    {testData.Label}");
+            Console.WriteLine($"-------------------------------------------------");
+        }
 
         public void RunDatasetClassification()
         {
@@ -17,15 +32,7 @@ namespace clu.machinelearning.irisclassification
             Console.WriteLine($"*      Accuracy of prediction model: {modelAccuracy * 100}%       *");
             Console.WriteLine($"*************************************************");
 
-            var irisFlowerTestData = modelBuilder.GetIrisFlowerTestData();
-            foreach (var irisFlowerData in irisFlowerTestData)
-            {
-                var prediction = predictionModel.Predict(irisFlowerData);
-
-                Console.WriteLine($"Predicted type: {prediction.PredictedLabels}");
-                Console.WriteLine($"Actual type:    {irisFlowerData.Label}");
-                Console.WriteLine($"-------------------------------------------------");
-            }
+            modelBuilder.IrisFlowerTestData.ForEach(testData => runPrediction(predictionModel, testData));
         }
 
         public void RunIndividualClassification()
@@ -33,7 +40,7 @@ namespace clu.machinelearning.irisclassification
             var modelBuilder = new IrisFlowerModelBuilder();
             var predictionModel = modelBuilder.BuildAndTrain();
 
-            var irisFlowerData = new IrisFlowerDataModel
+            var testData = new IrisFlowerDataModel
             {
                 SepalLength = 3.3f,
                 SepalWidth = 1.6f,
@@ -42,11 +49,7 @@ namespace clu.machinelearning.irisclassification
                 Label = "Iris-virginica"
             };
 
-            var prediction = predictionModel.Predict(irisFlowerData);
-
-            Console.WriteLine($"Predicted type : {prediction.PredictedLabels}");
-            Console.WriteLine($"Actual type :    {irisFlowerData.Label}");
-            Console.WriteLine($"-------------------------------------------------");
+            runPrediction(predictionModel, testData);
         }
 
         private IrisFlowerModelRunner()
