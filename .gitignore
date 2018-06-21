@@ -1,0 +1,10 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/packages
+/.vs/config
+/.vs/clu.machinelearning/v14
+/.vs/clu.machinelearning/v15
+/clu.machinelearning/bin
+/clu.machinelearning/obj
