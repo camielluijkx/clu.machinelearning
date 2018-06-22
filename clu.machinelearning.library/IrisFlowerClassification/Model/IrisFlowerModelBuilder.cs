@@ -4,6 +4,7 @@ using Microsoft.ML.Models;
 using Microsoft.ML.Trainers;
 using Microsoft.ML.Transforms;
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,17 +14,17 @@ namespace clu.machinelearning.library
     /// <summary>
     /// Class to build, train and evaluate iris flower prediction model.
     /// </summary>
-    public class IrisFlowerModelBuilder
+    public class IrisFlowerModelBuilder // [TODO] application settings
     {
         /// <summary>
         /// Location of training data file.
         /// </summary>
-        private const string TrainingDataFileLocation = @"IrisClassification/Data/iris-data_training.csv";
+        private const string TrainingDataFileLocation = @"D:\Workspace\clu.machinelearning\clu.machinelearning.library\IrisFlowerClassification\Data\iris-data_training.csv";
 
         /// <summary>
         /// Location of test data file.
         /// </summary>
-        private const string TestDataFileLocation = @"IrisClassification/Data/iris-data_test.csv";
+        private const string TestDataFileLocation = @"D:\Workspace\clu.machinelearning\clu.machinelearning.library\IrisFlowerClassification\Data\iris-data_test.csv";
 
         private List<IrisFlowerDataModel> getIrisFlowerDataFromCsv(string dataFileLocation)
         {
@@ -70,31 +71,38 @@ namespace clu.machinelearning.library
         /// <returns>Trained prediction model for iris flower classification.</returns>
         public PredictionModel<IrisFlowerDataModel, IrisFlowerPredictionModel> BuildAndTrain()
         {
-            var pipeline = new LearningPipeline
+            try
             {
-                // 1) Load data
-                // Create a pipeline and load training data.
-                new TextLoader(TrainingDataFileLocation).CreateFrom<IrisFlowerDataModel>(useHeader: true, separator: ','),
+                var pipeline = new LearningPipeline
+                {
+                    // 1) Load data
+                    // Create a pipeline and load training data.
+                    new TextLoader(TrainingDataFileLocation).CreateFrom<IrisFlowerDataModel>(useHeader: true, separator: ','),
 
-                // 2) Transform data
-                // Assign numeric values to text in "Label" column, because only numbers can be processed during model training.
-                new Dictionarizer("Label"),
+                    // 2) Transform data
+                    // Assign numeric values to text in "Label" column, because only numbers can be processed during model training.
+                    new Dictionarizer("Label"),
 
-                // Puts all features into a vector.
-                new ColumnConcatenator("Features", "SepalLength", "SepalWidth", "PetalLength", "PetalWidth"),
+                    // Puts all features into a vector.
+                    new ColumnConcatenator("Features", "SepalLength", "SepalWidth", "PetalLength", "PetalWidth"),
 
-                // 3) Add learner
-                // Add a learning algorithm to the pipeline for classification. 
-                new StochasticDualCoordinateAscentClassifier(),
+                    // 3) Add learner
+                    // Add a learning algorithm to the pipeline for classification. 
+                    new StochasticDualCoordinateAscentClassifier(),
 
-                // Convert text in "Label" column back into value of step 2.
-                new PredictedLabelColumnOriginalValueConverter() { PredictedLabelColumn = "PredictedLabel" }
-            };
+                    // Convert text in "Label" column back into value of step 2.
+                    new PredictedLabelColumnOriginalValueConverter() { PredictedLabelColumn = "PredictedLabel" }
+                };
 
-            // 4) Train your model based on the data set.
-            var trainingModel = pipeline.Train<IrisFlowerDataModel, IrisFlowerPredictionModel>();
+                // 4) Train your model based on the data set.
+                var trainingModel = pipeline.Train<IrisFlowerDataModel, IrisFlowerPredictionModel>();
 
-            return trainingModel;
+                return trainingModel;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         /// <summary>
@@ -104,13 +112,20 @@ namespace clu.machinelearning.library
         /// <returns>Accuracy of trained prediction model for iris flower classification.</returns>
         public double Evaluate(PredictionModel<IrisFlowerDataModel, IrisFlowerPredictionModel> trainingModel)
         {
-            // 1) Load data
-            var testData = new TextLoader(TestDataFileLocation).CreateFrom<IrisFlowerDataModel>(useHeader: true, separator: ',');
+            try
+            {
+                // 1) Load data
+                var testData = new TextLoader(TestDataFileLocation).CreateFrom<IrisFlowerDataModel>(useHeader: true, separator: ',');
 
-            // 2) Evaluate model
-            var classificationMetrics = new ClassificationEvaluator().Evaluate(trainingModel, testData);
+                // 2) Evaluate model
+                var classificationMetrics = new ClassificationEvaluator().Evaluate(trainingModel, testData);
 
-            return classificationMetrics.AccuracyMacro;
+                return classificationMetrics.AccuracyMacro;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

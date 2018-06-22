@@ -8,18 +8,20 @@ namespace clu.machinelearning.library
     /// <summary>
     /// Class to run iris flower prediction models. 
     /// </summary>
-    public class IrisFlowerModelRunner
+    public class IrisFlowerModelRunner // [TODO] refactor models
     {
         private static readonly Lazy<IrisFlowerModelRunner> instance =
             new Lazy<IrisFlowerModelRunner>(() => new IrisFlowerModelRunner());
 
-        private void runPrediction(PredictionModel<IrisFlowerDataModel, IrisFlowerPredictionModel> predictionModel, IrisFlowerDataModel testData)
+        private IrisFlowerPredictionModel runPrediction(PredictionModel<IrisFlowerDataModel, IrisFlowerPredictionModel> predictionModel, IrisFlowerDataModel testData)
         {
             var prediction = predictionModel.Predict(testData);
 
             Console.WriteLine($"Predicted type: {prediction.PredictedLabels}");
             Console.WriteLine($"Actual type:    {testData.Label}");
             Console.WriteLine($"-------------------------------------------------");
+
+            return prediction;
         }
 
         public void RunDatasetClassification()
@@ -42,21 +44,34 @@ namespace clu.machinelearning.library
             await Task.FromResult(0);
         }
 
-        public void RunIndividualClassification()
+        public IrisFlowerClassificationResponse RunIndividualClassification(IrisFlowerClassificationRequest classificationRequest)
         {
             var modelBuilder = new IrisFlowerModelBuilder();
             var predictionModel = modelBuilder.BuildAndTrain();
 
             var testData = new IrisFlowerDataModel
             {
-                SepalLength = 3.3f,
-                SepalWidth = 1.6f,
-                PetalLength = 0.2f,
-                PetalWidth = 5.1f,
-                Label = "Iris-virginica"
+                SepalLength = classificationRequest.SepalLength,
+                SepalWidth = classificationRequest.SepalWidth,
+                PetalLength = classificationRequest.PetalLength,
+                PetalWidth = classificationRequest.PetalWidth
             };
 
-            runPrediction(predictionModel, testData);
+            var prediction = runPrediction(predictionModel, testData);
+
+            var classificationResponse = new IrisFlowerClassificationResponse
+            {
+                Species = prediction.PredictedLabels
+            };
+
+            return classificationResponse;
+        }
+
+        public async Task<IrisFlowerClassificationResponse> RunIndividualClassificationAsync(IrisFlowerClassificationRequest classificationRequest)
+        {
+            var classificationResponse = RunIndividualClassification(classificationRequest);
+
+            return await Task.FromResult(classificationResponse);
         }
 
         private IrisFlowerModelRunner()
