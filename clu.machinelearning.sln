@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "clu.machinelearning.console
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "clu.machinelearning.library", "clu.machinelearning.library\clu.machinelearning.library.csproj", "{37694657-0996-448F-AF6F-735C949B4963}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "clu.machinelearning.api", "clu.machinelearning.api\clu.machinelearning.api.csproj", "{F3ACC832-8183-4782-A79F-C44327F7A906}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{37694657-0996-448F-AF6F-735C949B4963}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{37694657-0996-448F-AF6F-735C949B4963}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{37694657-0996-448F-AF6F-735C949B4963}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3ACC832-8183-4782-A79F-C44327F7A906}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3ACC832-8183-4782-A79F-C44327F7A906}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3ACC832-8183-4782-A79F-C44327F7A906}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3ACC832-8183-4782-A79F-C44327F7A906}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,6 +1,7 @@
 ﻿using Microsoft.ML;
 
 using System;
+using System.Threading.Tasks;
 
 namespace clu.machinelearning.library
 {
@@ -32,6 +33,13 @@ namespace clu.machinelearning.library
             Console.WriteLine($"*************************************************");
 
             modelBuilder.IrisFlowerTestData.ForEach(testData => runPrediction(predictionModel, testData));
+        }
+
+        public async Task RunDatasetClassificationAsync()
+        {
+            RunDatasetClassification();
+
+            await Task.FromResult(0);
         }
 
         public void RunIndividualClassification()

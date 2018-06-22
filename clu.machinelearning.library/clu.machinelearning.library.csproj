@@ -5,14 +5,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.5" />
     <PackageReference Include="Microsoft.ML" Version="0.2.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="IrisClassification\Data\iris-data_test.csv">
+    <None Update="IrisFlowerClassification\Data\iris-data_test.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="IrisClassification\Data\iris-data_training.csv">
+    <None Update="IrisFlowerClassification\Data\iris-data_training.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

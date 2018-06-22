@@ -10,3 +10,5 @@
 /clu.machinelearning.console/obj/*
 /clu.machinelearning.library/bin/*
 /clu.machinelearning.library/obj/*
+/clu.machinelearning.api/bin/*
+/clu.machinelearning.api/obj/*
