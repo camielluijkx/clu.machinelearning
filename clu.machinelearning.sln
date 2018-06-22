@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27428.2002
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "clu.machinelearning", "clu.machinelearning.csproj", "{F19A8E44-DEB4-4BC6-BC1B-0DDCEFA79860}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "clu.machinelearning.console", "clu.machinelearning.console\clu.machinelearning.console.csproj", "{677AB013-CC21-4C8E-A494-8D90652EAD4E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "clu.machinelearning.library", "clu.machinelearning.library\clu.machinelearning.library.csproj", "{37694657-0996-448F-AF6F-735C949B4963}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F19A8E44-DEB4-4BC6-BC1B-0DDCEFA79860}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F19A8E44-DEB4-4BC6-BC1B-0DDCEFA79860}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F19A8E44-DEB4-4BC6-BC1B-0DDCEFA79860}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F19A8E44-DEB4-4BC6-BC1B-0DDCEFA79860}.Release|Any CPU.Build.0 = Release|Any CPU
+		{677AB013-CC21-4C8E-A494-8D90652EAD4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{677AB013-CC21-4C8E-A494-8D90652EAD4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{677AB013-CC21-4C8E-A494-8D90652EAD4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{677AB013-CC21-4C8E-A494-8D90652EAD4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37694657-0996-448F-AF6F-735C949B4963}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37694657-0996-448F-AF6F-735C949B4963}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37694657-0996-448F-AF6F-735C949B4963}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37694657-0996-448F-AF6F-735C949B4963}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

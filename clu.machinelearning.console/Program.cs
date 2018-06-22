@@ -1,9 +1,9 @@
-﻿using clu.machinelearning.irisclassification;
-using static clu.machinelearning.Helpers.ConsoleHelper;
+﻿using clu.machinelearning.library;
+using static clu.machinelearning.library.ConsoleHelper;
 
 using System.Collections.Generic;
 
-namespace clu.machinelearning
+namespace clu.machinelearning.console
 {
     class Program
     {

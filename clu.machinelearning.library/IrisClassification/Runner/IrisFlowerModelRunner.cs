@@ -1,9 +1,8 @@
 ﻿using Microsoft.ML;
 
 using System;
-using System.Linq;
 
-namespace clu.machinelearning.irisclassification
+namespace clu.machinelearning.library
 {
     /// <summary>
     /// Class to run iris flower prediction models. 

@@ -1,6 +1,6 @@
 ﻿using Microsoft.ML.Runtime.Api;
 
-namespace clu.machinelearning.irisclassification
+namespace clu.machinelearning.library
 {
     /// <summary>
     /// Class to represent iris flower properties used to provide as training data and input for classification.

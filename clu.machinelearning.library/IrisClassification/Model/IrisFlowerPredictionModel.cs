@@ -1,6 +1,6 @@
 ﻿using Microsoft.ML.Runtime.Api;
 
-namespace clu.machinelearning.irisclassification
+namespace clu.machinelearning.library
 {
     /// <summary>
     /// Class to represent result returned from iris flower prediction.

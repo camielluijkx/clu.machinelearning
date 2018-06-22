@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace clu.machinelearning.irisclassification
+namespace clu.machinelearning.library
 {
     /// <summary>
     /// Class to build, train and evaluate iris flower prediction model.

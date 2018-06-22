@@ -4,5 +4,9 @@
 
 /packages
 /.vs
-/obj
-/bin
+/bin/*
+/obj/*
+/clu.machinelearning.console/bin/*
+/clu.machinelearning.console/obj/*
+/clu.machinelearning.library/bin/*
+/clu.machinelearning.library/obj/*
