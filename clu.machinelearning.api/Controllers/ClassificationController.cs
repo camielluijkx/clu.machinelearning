@@ -38,7 +38,6 @@ namespace clu.machinelearning.api
             return Ok(classificationResponse);
         }
 
-        // [TODO] api documentation
         // [TODO] extend api
     }
 }

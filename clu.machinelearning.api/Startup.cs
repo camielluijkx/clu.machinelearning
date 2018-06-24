@@ -4,6 +4,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using Swashbuckle.AspNetCore.Swagger;
+using System;
+using System.IO;
 
 namespace clu.machinelearning.api
 {
@@ -24,6 +26,12 @@ namespace clu.machinelearning.api
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = "CLU Machine Learning API", Version = "v1" });
+            });
+
+            services.ConfigureSwaggerGen(c =>
+            {
+                c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "clu.machinelearning.api.xml"), true);
+                c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "clu.machinelearning.library.xml"), true);
             });
         }
 
