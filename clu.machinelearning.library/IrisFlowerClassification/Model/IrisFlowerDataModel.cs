@@ -5,7 +5,7 @@ namespace clu.machinelearning.library
     /// <summary>
     /// Class to represent iris flower properties used to provide as training data and input for classification.
     /// </summary>
-    public class IrisFlowerDataModel
+    internal class IrisFlowerDataModel
     {
         /// <summary>
         /// Sepal length of iris flower.

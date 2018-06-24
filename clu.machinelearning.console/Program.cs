@@ -9,12 +9,12 @@ namespace clu.machinelearning.console
 {
     class Program
     {
-        private static void runDatasetClassification()
-        {
-            IrisFlowerModelRunner.Instance.RunDatasetClassification();
-        }
+        /// <summary>
+        /// Location of test data file.
+        /// </summary>
+        private const string TestDataFileLocation = @"D:\Workspace\clu.machinelearning\clu.machinelearning.library\IrisFlowerClassification\Data\iris-data_test.csv"; // [TODO] load from datasource, create internal datafile
 
-        private enum IrisFlowerInputType
+        internal enum IrisFlowerInputType
         {
             [Display(Name = "sepal lenth of iris flower (for example 3.3)")]
             SepalLength,
@@ -57,17 +57,44 @@ namespace clu.machinelearning.console
             return returnValue;
         }
 
-        private static void runIndividualClassification()
+        private static void runClassification(IrisFlowerClassificationRequest classificationRequest)
+        {
+            var classificationResponse = IrisFlowerModelRunner.Instance.RunClassification(classificationRequest);
+            if (!classificationResponse.Success)
+            {
+                Console.WriteLine($"Iris flower classification failed: {classificationResponse.Message}");
+            }
+        }
+
+        private static void runDatasetClassification()
         {
             var classificationRequest = new IrisFlowerClassificationRequest
             {
+                ClassificationType = IrisFlowerClassificationType.Dataset,
+                ClassificationInputFileLocation = TestDataFileLocation
+            };
+
+            runClassification(classificationRequest);
+        }
+
+        private static void runIndividualClassification()
+        {
+            var classificationInput = new IrisFlowerClassificationInput
+            {
+                Id = Guid.NewGuid(),
                 SepalLength = getValue(IrisFlowerInputType.SepalLength),
                 SepalWidth = getValue(IrisFlowerInputType.SepalWidth),
                 PetalLength = getValue(IrisFlowerInputType.PetalLength),
                 PetalWidth = getValue(IrisFlowerInputType.PetalWidth)
             };
 
-            IrisFlowerModelRunner.Instance.RunIndividualClassification(classificationRequest);
+            var classificationRequest = new IrisFlowerClassificationRequest
+            {
+                ClassificationType = IrisFlowerClassificationType.Individual,
+                ClassificationInput = new List<IrisFlowerClassificationInput> { classificationInput }
+            };
+
+            runClassification(classificationRequest);
         }
 
         static void Main(string[] args)

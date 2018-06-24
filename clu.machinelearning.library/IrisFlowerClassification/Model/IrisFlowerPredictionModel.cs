@@ -5,7 +5,7 @@ namespace clu.machinelearning.library
     /// <summary>
     /// Class to represent result returned from iris flower prediction.
     /// </summary>
-    public class IrisFlowerPredictionModel
+    internal class IrisFlowerPredictionModel
     {
         /// <summary>
         /// Predicted iris flower species.
