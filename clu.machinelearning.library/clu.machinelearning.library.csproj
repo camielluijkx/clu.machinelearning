@@ -10,15 +10,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="SentimentAnalysis\**" />
+    <EmbeddedResource Remove="SentimentAnalysis\**" />
+    <None Remove="SentimentAnalysis\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.5" />
     <PackageReference Include="Microsoft.ML" Version="0.2.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="IrisFlowerClassification\Data\iris-data_test.csv">
+    <None Update="IrisFlowerClassification\Data\IrisFlowerTestData.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="IrisFlowerClassification\Data\iris-data_training.csv">
+    <None Update="IrisFlowerClassification\Data\IrisFlowerTrainingData.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

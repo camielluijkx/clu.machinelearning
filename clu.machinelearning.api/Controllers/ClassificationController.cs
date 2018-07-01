@@ -27,17 +27,15 @@ namespace clu.machinelearning.api
             var classificationRequest = new IrisFlowerClassificationRequest
             {
                 ClassificationType = IrisFlowerClassificationType.Individual,
-                ClassificationInput = new List<IrisFlowerClassificationInput>() { classificationInput }
+                ClassificationInput = new List<IrisFlowerClassificationInput>() { classificationInput },
             };
 
-            var classificationResponse = await IrisFlowerModelRunner.Instance.RunIndividualClassificationAsync(classificationRequest);
+            var classificationResponse = await IrisFlowerClassificationRunner.Instance.RunClassificationAsync(classificationRequest);
             if (!classificationResponse.Success)
             {
                 return StatusCode(500, classificationResponse.Message);
             }
             return Ok(classificationResponse);
         }
-
-        // [TODO] extend api
     }
 }

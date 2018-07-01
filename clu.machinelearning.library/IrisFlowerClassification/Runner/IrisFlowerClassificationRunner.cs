@@ -11,19 +11,14 @@ namespace clu.machinelearning.library
     /// <summary>
     /// Class to run iris flower prediction models. 
     /// </summary>
-    public class IrisFlowerModelRunner
+    public class IrisFlowerClassificationRunner
     {
-        private static readonly Lazy<IrisFlowerModelRunner> instance =
-            new Lazy<IrisFlowerModelRunner>(() => new IrisFlowerModelRunner());
+        private static readonly Lazy<IrisFlowerClassificationRunner> instance =
+            new Lazy<IrisFlowerClassificationRunner>(() => new IrisFlowerClassificationRunner());
 
-        /// <summary>
-        /// Location of training data file.
-        /// </summary>
-        private const string TrainingDataFileLocation = @"D:\Workspace\clu.machinelearning\clu.machinelearning.library\IrisFlowerClassification\Data\iris-data_training.csv"; // [TODO] load from datasource, create internal datafile
-
-        private IEnumerable<IrisFlowerDataModel> getIrisFlowerDataFromCsv(string dataFileLocation)
+        private IEnumerable<IrisFlowerDataModel> getIrisFlowerTestData()
         {
-            return File.ReadAllLines(dataFileLocation)
+            return File.ReadAllLines(IrisFlowerClassificationConstants.TestDataFileLocation)
                 .Skip(1)
                 .Select(x => x.Split(','))
                 .Select(x => new IrisFlowerDataModel
@@ -73,10 +68,9 @@ namespace clu.machinelearning.library
         }
 
         private IrisFlowerClassificationResponse runDatasetClassification(
-            PredictionModel<IrisFlowerDataModel, IrisFlowerPredictionModel> predictionModel, string inputDataFileLocation)
+            PredictionModel<IrisFlowerDataModel, IrisFlowerPredictionModel> predictionModel)
         {
-            var inputData = getIrisFlowerDataFromCsv(inputDataFileLocation);
-            var classificationInput = inputData
+            var classificationInput = getIrisFlowerTestData()
                 .Select(p => new IrisFlowerClassificationInput
                 {
                     Id = Guid.NewGuid(),
@@ -119,32 +113,31 @@ namespace clu.machinelearning.library
         {
             try
             {
-                var modelBuilder = new IrisFlowerModelBuilder();
-                var predictionModel = modelBuilder.BuildAndTrain(TrainingDataFileLocation);
+                var classificationModel = new IrisFlowerModelBuilder();
+                var predictionModel = classificationModel.Train();
 
                 if (classificationRequest.ClassificationType == IrisFlowerClassificationType.Dataset)
                 {
-                    if (string.IsNullOrEmpty(classificationRequest.ClassificationInputFileLocation))
-                    {
-                        throw new ArgumentNullException(nameof(classificationRequest.ClassificationInputFileLocation));
-                    }
-
                     if (classificationRequest.ClassificationInput != null && classificationRequest.ClassificationInput.Any())
                     {
-                        throw new InvalidOperationException($"Do not provide individual input when classification type is set to dataset. Provide a classification input file location instead.");
+                        throw new InvalidOperationException($"Do not provide individual input when classification type is set to dataset.");
                     }
 
-                    var inputDataFileLocation = classificationRequest.ClassificationInputFileLocation;
-                    var modelAccuracy = modelBuilder.Evaluate(predictionModel, inputDataFileLocation);
+                    var classificationMetrics = classificationModel.Evaluate(predictionModel);
 
                     Console.WriteLine($"*************************************************");
-                    Console.WriteLine($"*      Accuracy of prediction model: {modelAccuracy * 100}%       *");
+                    Console.WriteLine($"*      Accuracy of prediction model: {classificationMetrics.AccuracyMacro}%       *");
                     Console.WriteLine($"*************************************************");
 
-                    return runDatasetClassification(predictionModel, inputDataFileLocation);
+                    return runDatasetClassification(predictionModel);
                 }
                 else
                 {
+                    if (classificationRequest.ClassificationInput == null || !classificationRequest.ClassificationInput.Any())
+                    {
+                        throw new InvalidOperationException($"Please provide any input when classification type is set to individual.");
+                    }
+
                     return runIndividualClassification(predictionModel, classificationRequest.ClassificationInput);
                 }
             }
@@ -158,18 +151,18 @@ namespace clu.machinelearning.library
             }
         }
 
-        public async Task<IrisFlowerClassificationResponse> RunIndividualClassificationAsync(IrisFlowerClassificationRequest classificationRequest)
+        public async Task<IrisFlowerClassificationResponse> RunClassificationAsync(IrisFlowerClassificationRequest classificationRequest)
         {
             var classificationResponse = RunClassification(classificationRequest);
 
             return await Task.FromResult(classificationResponse);
         }
 
-        private IrisFlowerModelRunner()
+        private IrisFlowerClassificationRunner()
         {
         }
 
-        public static IrisFlowerModelRunner Instance
+        public static IrisFlowerClassificationRunner Instance
         {
             get
             {

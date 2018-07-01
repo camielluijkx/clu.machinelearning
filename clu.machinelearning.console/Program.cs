@@ -4,16 +4,12 @@ using static clu.machinelearning.library.ConsoleHelper;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 
 namespace clu.machinelearning.console
 {
     class Program
     {
-        /// <summary>
-        /// Location of test data file.
-        /// </summary>
-        private const string TestDataFileLocation = @"D:\Workspace\clu.machinelearning\clu.machinelearning.library\IrisFlowerClassification\Data\iris-data_test.csv"; // [TODO] load from datasource, create internal datafile
-
         internal enum IrisFlowerInputType
         {
             [Display(Name = "sepal lenth of iris flower (for example 3.3)")]
@@ -29,7 +25,7 @@ namespace clu.machinelearning.console
             PetalWidth
         }
 
-        private static float getValue(IrisFlowerInputType inputType)
+        private static float getIrisFlowerInputValue(IrisFlowerInputType inputType)
         {
             float returnValue = 0.0f;
 
@@ -57,35 +53,34 @@ namespace clu.machinelearning.console
             return returnValue;
         }
 
-        private static void runClassification(IrisFlowerClassificationRequest classificationRequest)
+        private static async Task runIrisFlowerClassificationAsync(IrisFlowerClassificationRequest classificationRequest)
         {
-            var classificationResponse = IrisFlowerModelRunner.Instance.RunClassification(classificationRequest);
+            var classificationResponse = await IrisFlowerClassificationRunner.Instance.RunClassificationAsync(classificationRequest);
             if (!classificationResponse.Success)
             {
                 Console.WriteLine($"Iris flower classification failed: {classificationResponse.Message}");
             }
         }
 
-        private static void runDatasetClassification()
+        private static async Task runIrisFlowerDatasetClassificationAsync()
         {
             var classificationRequest = new IrisFlowerClassificationRequest
             {
-                ClassificationType = IrisFlowerClassificationType.Dataset,
-                ClassificationInputFileLocation = TestDataFileLocation
+                ClassificationType = IrisFlowerClassificationType.Dataset
             };
 
-            runClassification(classificationRequest);
+            await runIrisFlowerClassificationAsync(classificationRequest);
         }
 
-        private static void runIndividualClassification()
+        private static async Task runIrisFlowerIndividualClassificationAsync()
         {
             var classificationInput = new IrisFlowerClassificationInput
             {
                 Id = Guid.NewGuid(),
-                SepalLength = getValue(IrisFlowerInputType.SepalLength),
-                SepalWidth = getValue(IrisFlowerInputType.SepalWidth),
-                PetalLength = getValue(IrisFlowerInputType.PetalLength),
-                PetalWidth = getValue(IrisFlowerInputType.PetalWidth)
+                SepalLength = getIrisFlowerInputValue(IrisFlowerInputType.SepalLength),
+                SepalWidth = getIrisFlowerInputValue(IrisFlowerInputType.SepalWidth),
+                PetalLength = getIrisFlowerInputValue(IrisFlowerInputType.PetalLength),
+                PetalWidth = getIrisFlowerInputValue(IrisFlowerInputType.PetalWidth)
             };
 
             var classificationRequest = new IrisFlowerClassificationRequest
@@ -94,19 +89,69 @@ namespace clu.machinelearning.console
                 ClassificationInput = new List<IrisFlowerClassificationInput> { classificationInput }
             };
 
-            runClassification(classificationRequest);
+            await runIrisFlowerClassificationAsync(classificationRequest);
         }
 
-        static void Main(string[] args)
+        private static async Task runSentimentAnalysisClassificationAsync(SentimentAnalysisClassificationRequest classificationRequest)
+        {
+            var classificationResponse = await SentimentAnalysisClassificationRunner.Instance.RunClassificationAsync(classificationRequest);
+            if (!classificationResponse.Success)
+            {
+                Console.WriteLine($"Sentiment analysis classification failed: {classificationResponse.Message}");
+            }
+        }
+
+        private static async Task runSentimentAnalysisDatasetClassificationAsync()
+        {
+            var classificationRequest = new SentimentAnalysisClassificationRequest
+            {
+                ClassificationType = SentimentAnalysisClassificationType.Dataset
+            };
+
+            await runSentimentAnalysisClassificationAsync(classificationRequest);
+        }
+
+        private static async Task runSentimentAnalysisIndividualClassificationAsync()
+        {
+            var classificationInput = new List<SentimentAnalysisClassificationInput>
+            {
+                new SentimentAnalysisClassificationInput
+                {
+                    Id = Guid.NewGuid(),
+                    ActualSentiment = 0,
+                    TextForAnalysis = "Please refrain from adding nonsense to Wikipedia."
+                },
+                new SentimentAnalysisClassificationInput
+                {
+                    Id = Guid.NewGuid(),
+                    ActualSentiment = 1,
+                    TextForAnalysis = "He is the best, and the article should say that."
+                },
+            };
+
+            var classificationRequest = new SentimentAnalysisClassificationRequest
+            {
+                ClassificationType = SentimentAnalysisClassificationType.Individual,
+                ClassificationInput = classificationInput
+            };
+
+            await runSentimentAnalysisClassificationAsync(classificationRequest);
+        }
+
+        static async Task Main(string[] args)
         {
             Initialize();
 
             ShowMenu(
                 new List<MenuItem>
                 {
-                    new MenuItem(1, "Iris flower classification (dataset)", runDatasetClassification),
-                    new MenuItem(2, "Iris flower classification (individual)", runIndividualClassification)
+                    new MenuItem(1, "Iris flower classification (dataset)", async () => await runIrisFlowerDatasetClassificationAsync()),
+                    new MenuItem(2, "Iris flower classification (individual)", async () => await runIrisFlowerIndividualClassificationAsync()),
+                    new MenuItem(3, "Sentiment analysis classification (dataset)", async () => await runSentimentAnalysisDatasetClassificationAsync()),
+                    new MenuItem(4, "Sentiment analysis classification (individual)", async () => await runSentimentAnalysisIndividualClassificationAsync())
                 });
+
+            await Task.FromResult(0);
         }
     }
 }
