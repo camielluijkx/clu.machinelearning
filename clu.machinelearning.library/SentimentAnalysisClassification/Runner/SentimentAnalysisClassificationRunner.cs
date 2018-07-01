@@ -11,9 +11,9 @@ namespace clu.machinelearning.library
         private static readonly Lazy<SentimentAnalysisClassificationRunner> instance =
             new Lazy<SentimentAnalysisClassificationRunner>(() => new SentimentAnalysisClassificationRunner());
 
-        private IEnumerable<SentimentAnalysisDataModel> getSentimentAnalysisTestData()
+        private IEnumerable<SentimentAnalysisDataModel> getSentimentAnalysisFileData(string dataFileLocation)
         {
-            return File.ReadAllLines(SentimentAnalysisClassificationConstants.TestDataFileLocation)
+            return File.ReadAllLines(dataFileLocation)
                 .Skip(1)
                 .Select(x => x.Split('\t'))
                 .Select(x => new SentimentAnalysisDataModel
@@ -29,63 +29,27 @@ namespace clu.machinelearning.library
             {
                 var modelBuilder = new SentimentAnalysisModelBuilder();
                 var trainedModel = await modelBuilder.TrainAsync();
+                var modelMetrics = modelBuilder.Evaluate(trainedModel);
 
-                if (classificationRequest.ClassificationType == SentimentAnalysisClassificationType.Dataset)
+                var inputModels = classificationRequest.ClassificationInput
+                    .Select(p => new SentimentAnalysisDataModel
+                    {
+                        SentimentText = p.TextForAnalysis
+                    })
+                    .ToList();
+                var outputModels = modelBuilder.Predict(trainedModel, inputModels);
+                var classificationOutput = outputModels
+                    .Select(p => new SentimentAnalysisClassificationOutput
+                    {
+                        PredictedSentiment = p.Sentiment
+                    })
+                    .ToList();
+
+                return new SentimentAnalysisClassificationResponse
                 {
-                    if (classificationRequest.ClassificationInput != null && classificationRequest.ClassificationInput.Any())
-                    {
-                        throw new InvalidOperationException($"Do not provide individual input when classification type is set to dataset.");
-                    }
-
-                    var modelMetrics = modelBuilder.Evaluate(trainedModel);
-
-                    var dataModels = getSentimentAnalysisTestData()
-                        .Select(p => new SentimentAnalysisDataModel
-                        {
-                            SentimentText = p.SentimentText
-                        })
-                        .ToList();
-                    var predictionModels = modelBuilder.Predict(trainedModel, dataModels);
-                    var classificationOutput = predictionModels
-                        .Select(p => new SentimentAnalysisClassificationOutput
-                        {
-                            PredictedSentiment = p.Sentiment
-                        })
-                        .ToList();
-
-                    return new SentimentAnalysisClassificationResponse
-                    {
-                        Success = true,
-                        ClassificationOutput = classificationOutput
-                    };
-                }
-                else
-                {
-                    if (classificationRequest.ClassificationInput == null || !classificationRequest.ClassificationInput.Any())
-                    {
-                        throw new InvalidOperationException($"Please provide any input when classification type is set to individual.");
-                    }
-
-                    var dataModels = classificationRequest.ClassificationInput
-                        .Select(p => new SentimentAnalysisDataModel
-                        {
-                            SentimentText = p.TextForAnalysis
-                        })
-                        .ToList();
-                    var predictionModels = modelBuilder.Predict(trainedModel, dataModels);
-                    var classificationOutput = predictionModels
-                        .Select(p => new SentimentAnalysisClassificationOutput
-                        {
-                            PredictedSentiment = p.Sentiment
-                        })
-                        .ToList();
-
-                    return new SentimentAnalysisClassificationResponse
-                    {
-                        Success = true,
-                        ClassificationOutput = classificationOutput
-                    };
-                }
+                    Success = true,
+                    ClassificationOutput = classificationOutput
+                };
             }
             catch (Exception ex)
             {

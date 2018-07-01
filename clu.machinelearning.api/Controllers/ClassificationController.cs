@@ -26,8 +26,7 @@ namespace clu.machinelearning.api
         {
             var classificationRequest = new IrisFlowerClassificationRequest
             {
-                ClassificationType = IrisFlowerClassificationType.Individual,
-                ClassificationInput = new List<IrisFlowerClassificationInput>() { classificationInput },
+                ClassificationInput = new List<IrisFlowerClassificationInput>() { classificationInput }
             };
 
             var classificationResponse = await IrisFlowerClassificationRunner.Instance.RunClassificationAsync(classificationRequest);

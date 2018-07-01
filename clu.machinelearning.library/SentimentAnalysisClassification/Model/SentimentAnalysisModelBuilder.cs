@@ -65,35 +65,34 @@ namespace clu.machinelearning.library
             return modelMetrics;
         }
 
-        private SentimentAnalysisPredictionModel Predict(PredictionModel<SentimentAnalysisDataModel, SentimentAnalysisPredictionModel> trainedModel, SentimentAnalysisDataModel dataModel)
+        private SentimentAnalysisPredictionModel Predict(PredictionModel<SentimentAnalysisDataModel, SentimentAnalysisPredictionModel> trainedModel, SentimentAnalysisDataModel inputModel)
         {
-            SentimentAnalysisPredictionModel predictionModel = trainedModel.Predict(dataModel);
+            var outputModel = trainedModel.Predict(inputModel);
 
-            Console.WriteLine($"Predicted sentiment: {predictionModel.Sentiment}");
-            Console.WriteLine($"Actual sentiment:    {dataModel.Sentiment}");
+            Console.WriteLine($"Predicted sentiment: {outputModel.Sentiment}");
             Console.WriteLine($"-------------------------------------------------");
 
-            return predictionModel;
+            return outputModel;
         }
 
         /// <summary>
         /// Predicts sentiment analysis classification based trained model and input.
         /// </summary>
         /// <param name="trainedModel">Trained prediction model for sentiment analysis classification.</param>
-        /// <param name="dataModels">Input data for sentiment analysis classification.</param>
+        /// <param name="inputModels">Input data for sentiment analysis classification.</param>
         /// <returns>Predicition models from sentiment analysis classification.</returns>
-        public List<SentimentAnalysisPredictionModel> Predict(PredictionModel<SentimentAnalysisDataModel, SentimentAnalysisPredictionModel> trainedModel, List<SentimentAnalysisDataModel> dataModels)
+        public List<SentimentAnalysisPredictionModel> Predict(PredictionModel<SentimentAnalysisDataModel, SentimentAnalysisPredictionModel> trainedModel, List<SentimentAnalysisDataModel> inputModels)
         {
-            var predictionModels = new List<SentimentAnalysisPredictionModel>();
+            var outputModels = new List<SentimentAnalysisPredictionModel>();
 
-            foreach (var dataModel in dataModels)
+            foreach (var inputModel in inputModels)
             {
-                var predictionModel = trainedModel.Predict(dataModel);
+                var outputModel = Predict(trainedModel, inputModel);
 
-                predictionModels.Add(predictionModel);
+                outputModels.Add(outputModel);
             }
 
-            return predictionModels;
+            return outputModels;
         }
     }
 }
