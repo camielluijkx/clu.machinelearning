@@ -1,6 +1,4 @@
-﻿using Microsoft.ML;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -31,90 +29,12 @@ namespace clu.machinelearning.library
                 });
         }
 
-        private IrisFlowerPredictionModel runPrediction(PredictionModel<IrisFlowerDataModel, IrisFlowerPredictionModel> predictionModel, IrisFlowerDataModel dataModel)
-        {
-            var prediction = predictionModel.Predict(dataModel);
-
-            Console.WriteLine($"Predicted species: {prediction.PredictedLabels}");
-            Console.WriteLine($"Actual species:    {dataModel.Label}");
-            Console.WriteLine($"-------------------------------------------------");
-
-            return prediction;
-        }
-
-        private IrisFlowerClassificationOutput runClassification(PredictionModel<IrisFlowerDataModel, IrisFlowerPredictionModel> predictionModel, IrisFlowerClassificationInput classificationInput)
-        {
-            if (classificationInput.Id == Guid.Empty)
-            {
-                classificationInput.Id = Guid.NewGuid();
-            }
-
-            var dataModel = new IrisFlowerDataModel
-            {
-                SepalLength = classificationInput.SepalLength,
-                SepalWidth = classificationInput.SepalWidth,
-                PetalLength = classificationInput.PetalLength,
-                PetalWidth = classificationInput.PetalWidth,
-                Label = classificationInput.ActualSpecies
-            };
-
-            var prediction = runPrediction(predictionModel, dataModel);
-
-            return new IrisFlowerClassificationOutput
-            {
-                Id = classificationInput.Id,
-                PredictedSpecies = prediction.PredictedLabels
-            };
-        }
-
-        private IrisFlowerClassificationResponse runDatasetClassification(
-            PredictionModel<IrisFlowerDataModel, IrisFlowerPredictionModel> predictionModel)
-        {
-            var classificationInput = getIrisFlowerTestData()
-                .Select(p => new IrisFlowerClassificationInput
-                {
-                    Id = Guid.NewGuid(),
-                    SepalLength = p.SepalLength,
-                    SepalWidth = p.SepalWidth,
-                    PetalLength = p.PetalLength,
-                    PetalWidth = p.PetalWidth,
-                    ActualSpecies = p.Label
-                })
-                .ToList();
-
-            var classificationOutput = new List<IrisFlowerClassificationOutput>();
-            classificationInput.ForEach(ci => classificationOutput.Add(runClassification(predictionModel, ci)));
-
-            var classificationResponse = new IrisFlowerClassificationResponse
-            {
-                Success = true,
-                ClassificationOutput = classificationOutput
-            };
-
-            return classificationResponse;
-        }
-
-        private IrisFlowerClassificationResponse runIndividualClassification(PredictionModel<IrisFlowerDataModel, IrisFlowerPredictionModel> predictionModel, List<IrisFlowerClassificationInput> classificationInput)
-        {
-            var classificationOutput = new List<IrisFlowerClassificationOutput>();
-
-            classificationInput.ForEach(ci => classificationOutput.Add(runClassification(predictionModel, ci)));
-
-            var classificationResponse = new IrisFlowerClassificationResponse
-            {
-                Success = true,
-                ClassificationOutput = classificationOutput
-            };
-
-            return classificationResponse;
-        }
-
         public IrisFlowerClassificationResponse RunClassification(IrisFlowerClassificationRequest classificationRequest)
         {
             try
             {
-                var classificationModel = new IrisFlowerModelBuilder();
-                var predictionModel = classificationModel.Train();
+                var modelBuilder = new IrisFlowerModelBuilder();
+                var trainedModel = modelBuilder.Train();
 
                 if (classificationRequest.ClassificationType == IrisFlowerClassificationType.Dataset)
                 {
@@ -123,13 +43,28 @@ namespace clu.machinelearning.library
                         throw new InvalidOperationException($"Do not provide individual input when classification type is set to dataset.");
                     }
 
-                    var classificationMetrics = classificationModel.Evaluate(predictionModel);
+                    var modelMetrics = modelBuilder.Evaluate(trainedModel);
 
-                    Console.WriteLine($"*************************************************");
-                    Console.WriteLine($"*      Accuracy of prediction model: {classificationMetrics.AccuracyMacro}%       *");
-                    Console.WriteLine($"*************************************************");
+                    var dataModels = getIrisFlowerTestData()
+                        .Select(p => new IrisFlowerDataModel
+                        {
+                            SepalLength = p.SepalLength,
+                            SepalWidth = p.SepalWidth,
+                            PetalLength = p.PetalLength,
+                            PetalWidth = p.PetalWidth
+                        }).ToList();
+                    var predictionModels = modelBuilder.Predict(trainedModel, dataModels);
+                    var classificationOutput = predictionModels
+                        .Select(p => new IrisFlowerClassificationOutput
+                        {
+                            PredictedSpecies = p.PredictedLabels
+                        }).ToList();
 
-                    return runDatasetClassification(predictionModel);
+                    return new IrisFlowerClassificationResponse
+                    {
+                        Success = true,
+                        ClassificationOutput = classificationOutput
+                    };
                 }
                 else
                 {
@@ -138,7 +73,28 @@ namespace clu.machinelearning.library
                         throw new InvalidOperationException($"Please provide any input when classification type is set to individual.");
                     }
 
-                    return runIndividualClassification(predictionModel, classificationRequest.ClassificationInput);
+                    var dataModels = classificationRequest.ClassificationInput
+                        .Select(p => new IrisFlowerDataModel
+                        {
+                            SepalLength = p.SepalLength,
+                            SepalWidth = p.SepalWidth,
+                            PetalLength = p.PetalLength,
+                            PetalWidth = p.PetalWidth
+                        })
+                        .ToList();
+                    var predictionModels = modelBuilder.Predict(trainedModel, dataModels);
+                    var classificationOutput = predictionModels
+                        .Select(p => new IrisFlowerClassificationOutput
+                        {
+                            PredictedSpecies = p.PredictedLabels
+                        })
+                        .ToList();
+
+                    return new IrisFlowerClassificationResponse
+                    {
+                        Success = true,
+                        ClassificationOutput = classificationOutput
+                    };
                 }
             }
             catch (Exception ex)

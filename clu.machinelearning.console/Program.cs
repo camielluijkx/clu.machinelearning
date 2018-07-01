@@ -76,7 +76,6 @@ namespace clu.machinelearning.console
         {
             var classificationInput = new IrisFlowerClassificationInput
             {
-                Id = Guid.NewGuid(),
                 SepalLength = getIrisFlowerInputValue(IrisFlowerInputType.SepalLength),
                 SepalWidth = getIrisFlowerInputValue(IrisFlowerInputType.SepalWidth),
                 PetalLength = getIrisFlowerInputValue(IrisFlowerInputType.PetalLength),
@@ -117,14 +116,10 @@ namespace clu.machinelearning.console
             {
                 new SentimentAnalysisClassificationInput
                 {
-                    Id = Guid.NewGuid(),
-                    ActualSentiment = 0,
                     TextForAnalysis = "Please refrain from adding nonsense to Wikipedia."
                 },
                 new SentimentAnalysisClassificationInput
                 {
-                    Id = Guid.NewGuid(),
-                    ActualSentiment = 1,
                     TextForAnalysis = "He is the best, and the article should say that."
                 },
             };

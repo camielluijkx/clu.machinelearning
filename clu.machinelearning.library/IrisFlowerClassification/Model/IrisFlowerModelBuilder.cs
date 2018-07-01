@@ -4,6 +4,7 @@ using Microsoft.ML.Models;
 using Microsoft.ML.Trainers;
 using Microsoft.ML.Transforms;
 
+using System;
 using System.Collections.Generic;
 
 namespace clu.machinelearning.library
@@ -60,7 +61,22 @@ namespace clu.machinelearning.library
             // 2) Evaluate trained model.
             var modelMetrics = new ClassificationEvaluator().Evaluate(trainedModel, testModels);
 
+            Console.WriteLine($"*************************************************");
+            Console.WriteLine($"*      Accuracy of prediction model: {modelMetrics.AccuracyMacro}%       *");
+            Console.WriteLine($"*************************************************");
+
             return modelMetrics;
+        }
+
+        private IrisFlowerPredictionModel Predict(PredictionModel<IrisFlowerDataModel, IrisFlowerPredictionModel> trainedModel, IrisFlowerDataModel dataModel)
+        {
+            IrisFlowerPredictionModel predictionModel = trainedModel.Predict(dataModel);
+
+            Console.WriteLine($"Predicted species: {predictionModel.PredictedLabels}");
+            Console.WriteLine($"Actual species:    {dataModel.Label}");
+            Console.WriteLine($"-------------------------------------------------");
+
+            return predictionModel;
         }
 
         /// <summary>
@@ -69,9 +85,16 @@ namespace clu.machinelearning.library
         /// <param name="trainedModel">Trained prediction model for iris flower classification.</param>
         /// <param name="dataModels">Input data for iris flower classification.</param>
         /// <returns>Predicition models from iris flower classification.</returns>
-        public IEnumerable<IrisFlowerPredictionModel> Predict(PredictionModel<IrisFlowerDataModel, IrisFlowerPredictionModel> trainedModel, IEnumerable<IrisFlowerDataModel> dataModels)
+        public List<IrisFlowerPredictionModel> Predict(PredictionModel<IrisFlowerDataModel, IrisFlowerPredictionModel> trainedModel, List<IrisFlowerDataModel> dataModels)
         {
-            IEnumerable<IrisFlowerPredictionModel> predictionModels = trainedModel.Predict(dataModels);
+            var predictionModels = new List<IrisFlowerPredictionModel>();
+
+            foreach (var dataModel in dataModels)
+            {
+                var predictionModel = trainedModel.Predict(dataModel);
+
+                predictionModels.Add(predictionModel);
+            }
 
             return predictionModels;
         }

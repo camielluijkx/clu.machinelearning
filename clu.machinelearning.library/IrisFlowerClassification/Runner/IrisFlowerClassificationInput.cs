@@ -1,17 +1,7 @@
-﻿using Newtonsoft.Json;
-
-using System;
-
-namespace clu.machinelearning.library
+﻿namespace clu.machinelearning.library
 {
     public class IrisFlowerClassificationInput
     {
-        /// <summary>
-        /// Iris flower identification.
-        /// </summary>
-        [JsonIgnore]
-        public Guid Id { get; set; }
-
         /// <summary>
         /// Sepal length of iris flower (for example 3.3).
         /// </summary>
@@ -31,10 +21,5 @@ namespace clu.machinelearning.library
         /// Petal width of iris flower (for example 5.1).
         /// </summary>
         public float PetalWidth { get; set; }
-
-        /// <summary>
-        /// Iris flower actual species.
-        /// </summary>
-        public string ActualSpecies { get; set; }
     }
 }

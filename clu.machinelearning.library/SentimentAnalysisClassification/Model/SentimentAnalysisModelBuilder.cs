@@ -3,7 +3,7 @@ using Microsoft.ML.Data;
 using Microsoft.ML.Models;
 using Microsoft.ML.Trainers;
 using Microsoft.ML.Transforms;
-
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -54,7 +54,26 @@ namespace clu.machinelearning.library
             // 2) Evaluate trained model.
             var modelMetrics = new BinaryClassificationEvaluator().Evaluate(trainedModel, testModels);
 
+            Console.WriteLine($"*************************************************");
+            Console.WriteLine("Prediction model quality metrics evaluation");
+            Console.WriteLine("------------------------------------------");
+            Console.WriteLine($"Accuracy: {modelMetrics.Accuracy:P2}");
+            Console.WriteLine($"Auc: {modelMetrics.Auc:P2}");
+            Console.WriteLine($"F1Score: {modelMetrics.F1Score:P2}");
+            Console.WriteLine($"*************************************************");
+
             return modelMetrics;
+        }
+
+        private SentimentAnalysisPredictionModel Predict(PredictionModel<SentimentAnalysisDataModel, SentimentAnalysisPredictionModel> trainedModel, SentimentAnalysisDataModel dataModel)
+        {
+            SentimentAnalysisPredictionModel predictionModel = trainedModel.Predict(dataModel);
+
+            Console.WriteLine($"Predicted sentiment: {predictionModel.Sentiment}");
+            Console.WriteLine($"Actual sentiment:    {dataModel.Sentiment}");
+            Console.WriteLine($"-------------------------------------------------");
+
+            return predictionModel;
         }
 
         /// <summary>
@@ -63,9 +82,16 @@ namespace clu.machinelearning.library
         /// <param name="trainedModel">Trained prediction model for sentiment analysis classification.</param>
         /// <param name="dataModels">Input data for sentiment analysis classification.</param>
         /// <returns>Predicition models from sentiment analysis classification.</returns>
-        public IEnumerable<SentimentAnalysisPredictionModel> Predict(PredictionModel<SentimentAnalysisDataModel, SentimentAnalysisPredictionModel> trainedModel, IEnumerable<SentimentAnalysisDataModel> dataModels)
+        public List<SentimentAnalysisPredictionModel> Predict(PredictionModel<SentimentAnalysisDataModel, SentimentAnalysisPredictionModel> trainedModel, List<SentimentAnalysisDataModel> dataModels)
         {
-            IEnumerable<SentimentAnalysisPredictionModel> predictionModels = trainedModel.Predict(dataModels);
+            var predictionModels = new List<SentimentAnalysisPredictionModel>();
+
+            foreach (var dataModel in dataModels)
+            {
+                var predictionModel = trainedModel.Predict(dataModel);
+
+                predictionModels.Add(predictionModel);
+            }
 
             return predictionModels;
         }
