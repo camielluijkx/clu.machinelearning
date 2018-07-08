@@ -36,5 +36,32 @@ namespace clu.machinelearning.api
             }
             return Ok(classificationResponse);
         }
+
+        /// <summary>
+        /// Runs sentiment analysis classification based on properties and returns prediction result.
+        /// </summary>
+        /// <param name="classificationInput">Input needed for sentiment analysis classification.</param>
+        /// <remarks>Uses ML.NET to predict positive or negative sentiment based on input.</remarks>
+        /// <returns>Sentiment analysis classification result.</returns>
+        /// <response code="200">Classification is predicted and returned.</response>
+        /// <response code="500">Error occurred during classification.</response>
+        [HttpPost]
+        [Route("SentimentAnalysis")]
+        [ProducesResponseType(typeof(SentimentAnalysisClassificationOutput), 200)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> RunClassificationAsync([FromBody] SentimentAnalysisClassificationInput classificationInput)
+        {
+            var classificationRequest = new SentimentAnalysisClassificationRequest
+            {
+                ClassificationInput = new List<SentimentAnalysisClassificationInput>() { classificationInput }
+            };
+
+            var classificationResponse = await SentimentAnalysisClassificationRunner.Instance.RunClassificationAsync(classificationRequest);
+            if (!classificationResponse.Success)
+            {
+                return StatusCode(500, classificationResponse.Message);
+            }
+            return Ok(classificationResponse);
+        }
     }
 }

@@ -10,6 +10,8 @@ namespace clu.machinelearning.console
 {
     class Program
     {
+        #region Iris Flower Classification
+
         internal enum IrisFlowerInputType
         {
             [Display(Name = "sepal lenth of iris flower (for example 3.3)")]
@@ -27,14 +29,14 @@ namespace clu.machinelearning.console
 
         private static float getIrisFlowerInputValue(IrisFlowerInputType inputType)
         {
-            float returnValue = 0.0f;
+            var returnValue = 0.0f;
 
             Console.WriteLine($"Provide a value for {EnumHelper<IrisFlowerInputType>.GetDisplayValue(inputType)}.");
 
-            bool correctInput = false;
+            var correctInput = false;
             while (!correctInput)
             {
-                string inputValue = Console.ReadLine();
+                var inputValue = Console.ReadLine();
                 if (float.TryParse(inputValue, out returnValue))
                 {
                     correctInput = true;
@@ -57,10 +59,10 @@ namespace clu.machinelearning.console
         {
             var classificationInput = new IrisFlowerClassificationInput
             {
-                SepalLength = 3.3f, //getIrisFlowerInputValue(IrisFlowerInputType.SepalLength),
-                SepalWidth = 1.6f, //getIrisFlowerInputValue(IrisFlowerInputType.SepalWidth),
-                PetalLength = 0.2f, //getIrisFlowerInputValue(IrisFlowerInputType.PetalLength),
-                PetalWidth = 5.1f //getIrisFlowerInputValue(IrisFlowerInputType.PetalWidth)
+                SepalLength = getIrisFlowerInputValue(IrisFlowerInputType.SepalLength),
+                SepalWidth = getIrisFlowerInputValue(IrisFlowerInputType.SepalWidth),
+                PetalLength = getIrisFlowerInputValue(IrisFlowerInputType.PetalLength),
+                PetalWidth = getIrisFlowerInputValue(IrisFlowerInputType.PetalWidth)
             };
 
             var classificationRequest = new IrisFlowerClassificationRequest
@@ -75,18 +77,46 @@ namespace clu.machinelearning.console
             }
         }
 
+        #endregion
+
+        #region Sentiment Analysis Classification
+
+        private static string getSentimentAnalysisValue()
+        {
+            var returnValue = string.Empty;
+
+            Console.WriteLine($"Provide a text with or without sentiment.");
+
+            var correctInput = false;
+            while (!correctInput)
+            {
+                var inputValue = Console.ReadLine();
+                if (!string.IsNullOrEmpty(inputValue))
+                {
+                    correctInput = true;
+                }
+                else
+                {
+                    correctInput = false;
+                }
+
+                if (!correctInput)
+                {
+                    Console.WriteLine($"Empty text provided.");
+                }
+            }
+
+            return returnValue;
+        }
+
         private static async Task runSentimentAnalysisClassificationAsync()
         {
             var classificationInput = new List<SentimentAnalysisClassificationInput>
             {
                 new SentimentAnalysisClassificationInput
                 {
-                    TextForAnalysis = "Please refrain from adding nonsense to Wikipedia."
-                },
-                new SentimentAnalysisClassificationInput
-                {
-                    TextForAnalysis = "He is the best, and the article should say that."
-                },
+                    TextForAnalysis = getSentimentAnalysisValue()
+                }
             };
 
             var classificationRequest = new SentimentAnalysisClassificationRequest
@@ -100,6 +130,8 @@ namespace clu.machinelearning.console
                 Console.WriteLine($"Sentiment analysis classification failed: {classificationResponse.Message}");
             }
         }
+
+        #endregion
 
         static async Task Main(string[] args)
         {
