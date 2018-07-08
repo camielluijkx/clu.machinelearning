@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace clu.machinelearning.library
+namespace clu.machinelearning.library.helpers
 {
     public static class ConsoleHelper
     {

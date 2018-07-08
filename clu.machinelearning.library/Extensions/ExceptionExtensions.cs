@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace clu.machinelearning.library
+namespace clu.machinelearning.library.extensions
 {
     public static class ExceptionExtentions
     {

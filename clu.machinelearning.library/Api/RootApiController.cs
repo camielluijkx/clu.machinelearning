@@ -3,7 +3,7 @@
 using System;
 using System.Reflection;
 
-namespace clu.machinelearning.library
+namespace clu.machinelearning.library.api
 {
     public abstract class RootApiController : Controller
     {

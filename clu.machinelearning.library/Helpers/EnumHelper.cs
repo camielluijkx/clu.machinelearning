@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 
-namespace clu.machinelearning.library
+namespace clu.machinelearning.library.helpers
 {
     public static class EnumHelper<T>
     {

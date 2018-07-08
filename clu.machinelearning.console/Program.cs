@@ -1,5 +1,8 @@
-﻿using clu.machinelearning.library;
-using static clu.machinelearning.library.ConsoleHelper;
+﻿using clu.machinelearning.library.helpers;
+using static clu.machinelearning.library.helpers.ConsoleHelper;
+using SentimentAnalysis = clu.machinelearning.library.classification.sentimentanalysis;
+using SpeciesDetermination = clu.machinelearning.library.classification.speciesdetermination;
+using TaxiFarePrediction = clu.machinelearning.library.regression.taxifareprediction;
 
 using System;
 using System.Collections.Generic;
@@ -10,7 +13,7 @@ namespace clu.machinelearning.console
 {
     class Program
     {
-        #region Iris Flower Classification
+        #region Iris flower species determination
 
         internal enum IrisFlowerInputType
         {
@@ -27,7 +30,7 @@ namespace clu.machinelearning.console
             PetalWidth
         }
 
-        private static float getIrisFlowerInputValue(IrisFlowerInputType inputType)
+        private static float getIrisFlowerInputFloatValue(IrisFlowerInputType inputType)
         {
             var returnValue = 0.0f;
 
@@ -55,33 +58,33 @@ namespace clu.machinelearning.console
             return returnValue;
         }
 
-        private static async Task runIrisFlowerClassificationAsync()
+        private static async Task runIrisFlowerSpeciesDeterminationAsync()
         {
-            var classificationInput = new IrisFlowerClassificationInput
+            var modelInput = new SpeciesDetermination.ModelInput
             {
-                SepalLength = getIrisFlowerInputValue(IrisFlowerInputType.SepalLength),
-                SepalWidth = getIrisFlowerInputValue(IrisFlowerInputType.SepalWidth),
-                PetalLength = getIrisFlowerInputValue(IrisFlowerInputType.PetalLength),
-                PetalWidth = getIrisFlowerInputValue(IrisFlowerInputType.PetalWidth)
+                SepalLength = getIrisFlowerInputFloatValue(IrisFlowerInputType.SepalLength),
+                SepalWidth = getIrisFlowerInputFloatValue(IrisFlowerInputType.SepalWidth),
+                PetalLength = getIrisFlowerInputFloatValue(IrisFlowerInputType.PetalLength),
+                PetalWidth = getIrisFlowerInputFloatValue(IrisFlowerInputType.PetalWidth)
             };
 
-            var classificationRequest = new IrisFlowerClassificationRequest
+            var runnerRequest = new SpeciesDetermination.RunnerRequest
             {
-                ClassificationInput = new List<IrisFlowerClassificationInput> { classificationInput }
+                ModelInput = new List<SpeciesDetermination.ModelInput> { modelInput }
             };
 
-            var classificationResponse = await IrisFlowerClassificationRunner.Instance.RunClassificationAsync(classificationRequest);
-            if (!classificationResponse.Success)
+            var runnerResponse = await SpeciesDetermination.ModelRunner.Instance.RunClassificationAsync(runnerRequest);
+            if (!runnerResponse.Success)
             {
-                Console.WriteLine($"Iris flower classification failed: {classificationResponse.Message}");
+                Console.WriteLine($"Iris flower species determination failed: {runnerResponse.Message}");
             }
         }
 
         #endregion
 
-        #region Sentiment Analysis Classification
+        #region Text sentiment analysis
 
-        private static string getSentimentAnalysisValue()
+        private static string getTextInputStringValue()
         {
             var returnValue = string.Empty;
 
@@ -109,25 +112,128 @@ namespace clu.machinelearning.console
             return returnValue;
         }
 
-        private static async Task runSentimentAnalysisClassificationAsync()
+        private static async Task runTextSentimentAnalysisAsync()
         {
-            var classificationInput = new List<SentimentAnalysisClassificationInput>
+            var modelInput = new List<SentimentAnalysis.ModelInput>
             {
-                new SentimentAnalysisClassificationInput
+                new SentimentAnalysis.ModelInput
                 {
-                    TextForAnalysis = getSentimentAnalysisValue()
+                    TextForAnalysis = getTextInputStringValue()
                 }
             };
 
-            var classificationRequest = new SentimentAnalysisClassificationRequest
+            var runnerRequest = new SentimentAnalysis.RunnerRequest
             {
-                ClassificationInput = classificationInput
+                ModelInput = modelInput
             };
 
-            var classificationResponse = await SentimentAnalysisClassificationRunner.Instance.RunClassificationAsync(classificationRequest);
-            if (!classificationResponse.Success)
+            var runnerResponse = await SentimentAnalysis.ModelRunner.Instance.RunClassificationAsync(runnerRequest);
+            if (!runnerResponse.Success)
             {
-                Console.WriteLine($"Sentiment analysis classification failed: {classificationResponse.Message}");
+                Console.WriteLine($"Text sentiment analysis failed: {runnerResponse.Message}");
+            }
+        }
+
+        #endregion
+
+        #region Taxi Fare Prediction
+
+        internal enum TaxiFareInputType
+        {
+            [Display(Name = "ID of taxi vendor (CMT or VTS)")]
+            VendorId,
+
+            [Display(Name = "rate type of taxi trip (for example 1)")]
+            RateCode,
+
+            [Display(Name = "number of passengers on taxi trip (for example 1)")]
+            PassengerCount,
+
+            [Display(Name = "distance of taxi trip (for example 10.33)")]
+            TripDistance,
+
+            [Display(Name = "payment type of taxi trip (CSH or CRD)")]
+            PaymentType,
+        }
+
+        private static float getTaxiFareInputFloatValue(TaxiFareInputType inputType)
+        {
+            var returnValue = 0.0f;
+
+            Console.WriteLine($"Provide a value for {EnumHelper<TaxiFareInputType>.GetDisplayValue(inputType)}.");
+
+            var correctInput = false;
+            while (!correctInput)
+            {
+                var inputValue = Console.ReadLine();
+                if (float.TryParse(inputValue, out returnValue))
+                {
+                    correctInput = true;
+                }
+                else
+                {
+                    correctInput = false;
+                }
+
+                if (!correctInput)
+                {
+                    Console.WriteLine($"Incorrect value for {EnumHelper<TaxiFareInputType>.GetDisplayValue(inputType)}.");
+                }
+            }
+
+            return returnValue;
+        }
+
+        private static string getTaxiFareInputStringValue(TaxiFareInputType inputType)
+        {
+            var returnValue = string.Empty;
+
+            Console.WriteLine($"Provide a value for {EnumHelper<TaxiFareInputType>.GetDisplayValue(inputType)}.");
+
+            var correctInput = false;
+            while (!correctInput)
+            {
+                var inputValue = Console.ReadLine();
+                if (!string.IsNullOrEmpty(inputValue))
+                {
+                    correctInput = true;
+                }
+                else
+                {
+                    correctInput = false;
+                }
+
+                if (!correctInput)
+                {
+                    Console.WriteLine($"Incorrect value for {EnumHelper<TaxiFareInputType>.GetDisplayValue(inputType)}.");
+                }
+            }
+
+            return returnValue;
+        }
+        private static async Task runTaxiFarePredictionAsync()
+        {
+            var modelInput = new List<TaxiFarePrediction.ModelInput>
+            {
+                new TaxiFarePrediction.ModelInput
+                {
+                    VendorId = getTaxiFareInputStringValue(TaxiFareInputType.VendorId),
+                    RateCode = getTaxiFareInputStringValue(TaxiFareInputType.RateCode),
+                    PassengerCount = getTaxiFareInputFloatValue(TaxiFareInputType.PassengerCount),
+                    TripDistance = getTaxiFareInputFloatValue(TaxiFareInputType.TripDistance),
+                    PaymentType= getTaxiFareInputStringValue(TaxiFareInputType.PaymentType)
+                }
+            };
+
+            var runnerRequest = new TaxiFarePrediction.RunnerRequest
+            {
+                ModelInput = modelInput
+            };
+
+            var runnerResponse = await TaxiFarePrediction.ModelRunner.Instance.RunClassificationAsync(runnerRequest);
+            if (!runnerResponse.Success)
+            {
+                Console.WriteLine($"Text sentiment analysis failed: {runnerResponse.Message}");
             }
         }
 
@@ -140,8 +246,9 @@ namespace clu.machinelearning.console
             ShowMenu(
                 new List<MenuItem>
                 {
-                    new MenuItem(1, "Iris flower classification", async () => await runIrisFlowerClassificationAsync()),
-                    new MenuItem(2, "Sentiment analysis classification", async () => await runSentimentAnalysisClassificationAsync()),
+                    new MenuItem(1, "Iris flower species determination", async () => await runIrisFlowerSpeciesDeterminationAsync()),
+                    new MenuItem(2, "Text sentiment analysis", async () => await runTextSentimentAnalysisAsync()),
+                    new MenuItem(3, "Taxi fare prediction", async () => await runTaxiFarePredictionAsync())
                 });
 
             await Task.FromResult(0);
