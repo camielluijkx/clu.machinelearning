@@ -21,12 +21,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="IrisFlowerClassification\Data\IrisFlowerTestData.csv">
+    <None Update="Classification\IrisFlower\Data\IrisFlowerTestData.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="IrisFlowerClassification\Data\IrisFlowerTrainingData.csv">
+    <None Update="Classification\IrisFlower\Data\IrisFlowerTrainingData.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Regression\" />
+    <Folder Include="Regression\TaxiFarePrediction\" />
   </ItemGroup>
 
 </Project>
